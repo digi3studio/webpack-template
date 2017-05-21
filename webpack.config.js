@@ -2,14 +2,13 @@ var path = require('path');
 var webpack = require('webpack');
 var fs = require('fs');
 
-var entryPath = "../entry"
-
+var entryPath = "./entry";
 var entries = {};
 var files = fs.readdirSync(entryPath);
 files.forEach(function(file){
   if(file.indexOf('.') == 0)return;//ignore hidden file
   var fileName = file.replace('.jsx','').replace('.js','');
-  entries[fileName] = [entryPath+file, 'react-hot-loader/patch', 'webpack-dev-server/client?http://localhost:3000', 'webpack/hot/only-dev-server']
+  entries[fileName] = [entryPath+'/'+file, 'react-hot-loader/patch', 'webpack-dev-server/client?http://localhost:3000', 'webpack/hot/only-dev-server']
 });
 
 module.exports = {

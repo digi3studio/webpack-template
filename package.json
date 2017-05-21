@@ -49,5 +49,15 @@
     "react-hot-loader": "^3.0.0-beta.6",
     "react-redux": "^5.0.4",
     "redux": "*"
+  },
+  "babel": {
+    "presets": [
+      ["es2015", {"modules": false}],
+      "stage-2",
+      "react"
+    ],
+    "plugins": [
+      "react-hot-loader/babel"
+    ]
   }
 }

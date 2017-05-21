@@ -4,12 +4,13 @@ var config = require('./webpack.config.js');
 var fs = require('fs');
 
 //create entries
+var entryPath = "./entry";
 var entries = {};
-var files = fs.readdirSync('./entry');
+var files = fs.readdirSync(entryPath);
 files.forEach(function(file){
   if(file.indexOf('.')==0)return;//ignore hidden file
   var fileName = file.replace('.jsx','').replace('.js','');
-  entries[fileName] = ['../entry/'+file]
+  entries[fileName] = [entryPath+'/'+file]
 });
 
 module.exports = {

@@ -6,7 +6,8 @@ then make directory
 ./containers
 ./entry
 
-and copy the externals folder to js/external
+and copy the externals folder to 
+../../js/external
 
 to build file, run: 
 npm run build

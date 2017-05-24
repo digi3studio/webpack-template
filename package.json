@@ -36,7 +36,7 @@
     "babel-preset-stage-2": "^6.22.0",
     "copyfiles": "^1.2.0",
     "cross-env": "^3.1.4",
-    "react-hot-loader": "^3.0.0-beta.6",
+    "react-hot-loader": "^3.0.0-beta.7",
     "rimraf": "^2.6.0",
     "webpack": "^2.2.0",
     "webpack-dev-server": "^2.2.0",
@@ -46,7 +46,6 @@
     "hammerjs": "*",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
-    "react-hot-loader": "^3.0.0-beta.6",
     "react-redux": "^5.0.4",
     "redux": "*"
   },

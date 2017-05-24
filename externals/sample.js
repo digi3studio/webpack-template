@@ -6,21 +6,23 @@ var FILE = "sample";
 
 require.config({
   paths: {
-    "react":       "//cdnjs.cloudflare.com/ajax/libs/react/15.5.4/react.min",
-    "react-dom":   "//cdnjs.cloudflare.com/ajax/libs/react/15.5.4/react-dom.min",
-    "hammerjs" :   "//cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min",
-    "redux":       "//cdnjs.cloudflare.com/ajax/libs/redux/3.6.0/redux.min",
-    "react-redux": "//cdnjs.cloudflare.com/ajax/libs/react-redux/5.0.4/react-redux.min",
+    "react":       "//unpkg.com/react@15.5.4/dist/react",
+    "prop-types":  "//unpkg.com/prop-types@15.5.10/prop-types",
+    "react-dom":   "//unpkg.com/react-dom@15.5.4/dist/react-dom",
+    "redux":       "//unpkg.com/redux@3.6.0/dist/redux",
+    "react-redux": "//unpkg.com/react-redux@5.0.5/dist/react-redux",
+    "hammerjs" :   "//unpkg.com/hammerjs@2.0.8/hammer.min",
     "hot-reload":  "http://localhost:3000/static/"+FILE
   }
 });
 
-require(["react", "react-dom", "hammerjs", "redux", "react-redux"], function (React, ReactDOM, Hammer, Redux, ReactRedux) {
+require(["react", "prop-types", "react-dom", "redux", "react-redux", "hammerjs"], function (React, PropTypes, ReactDOM, Redux, ReactRedux, Hammer) {
   window.React      = React;
+  window.PropTypes  = PropTypes;
   window.ReactDOM   = ReactDOM;
-  window.Hammer     = Hammer;
   window.Redux      = Redux;
   window.ReactRedux = ReactRedux;
+  window.Hammer     = Hammer;
 
   var host = window.location.hostname;
   if(host.indexOf("local") == 0){

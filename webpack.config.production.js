@@ -4,7 +4,7 @@ var config = require('./webpack.config.js');
 var fs = require('fs');
 
 //create entries
-var entryPath = "./entry";
+var entryPath = "./entries";
 var entries = {};
 var files = fs.readdirSync(entryPath);
 files.forEach(function(file){

@@ -2,7 +2,7 @@ var path = require('path');
 var webpack = require('webpack');
 var fs = require('fs');
 
-var entryPath = "./entry";
+var entryPath = "./entries";
 var entries = {};
 var files = fs.readdirSync(entryPath);
 files.forEach(function(file){

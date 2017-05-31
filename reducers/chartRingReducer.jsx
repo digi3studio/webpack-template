@@ -4,6 +4,12 @@ export default function chartRingReducer(defaultState = null){
       case "HOT_RELOAD":
         return Object.assign({}, state, {hmr: Math.random()});
 
+      case 'CHANGE_TOTAL':
+        return Object.assign({}, state, {total: action.payload});
+
+      case 'CHANGE_IN_VIEWPORT':
+        return Object.assign({}, state, {inViewport : action.payload});
+
       case 'CHANGE_VALUE_0':
         return Object.assign({}, state, {data :
           [

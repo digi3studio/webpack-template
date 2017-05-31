@@ -43,7 +43,10 @@
     "fs": "*"
   },
   "dependencies": {
-    "hammerjs": "*",
+    "accounting": "^0.4.1",
+    "eases": "^1.0.8",
+    "in-viewport": "^3.5.0",
+    "numbro": "^1.11.0",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-redux": "^5.0.4",
@@ -51,7 +54,12 @@
   },
   "babel": {
     "presets": [
-      ["es2015", {"modules": false}],
+      [
+        "es2015",
+        {
+          "modules": false
+        }
+      ],
       "stage-2",
       "react"
     ],

@@ -1,12 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import ChartRing from "../components/ChartRing";
-import chartRingReducer from "../reducers/chartRingReducer";
-import infoGraphicReducer from "../reducers/infoGraphicReducer";
 import { Provider } from "react-redux";
 import { createStore } from 'redux';
 import InViewport from 'in-viewport';
+import chartRingReducer from "../reducers/chartRingReducer";
+import infoGraphicReducer from "../reducers/infoGraphicReducer";
+import factReducer from "../reducers/factReducer";
+import ChartRing from "../components/ChartRing";
 import Infographic from "../components/Infographic";
+import Fact from "../components/Fact";
 
 class Main{
   constructor(root){
@@ -91,14 +93,47 @@ class MainInfoGraphic{
   }
 }
 
+class MainFact{
+  constructor(root){
+    const defaultState = {
+      value:    parseFloat(root.getAttribute('data-value')),
+      headline: root.getAttribute('data-headline'),
+      subject:  root.getAttribute('data-subject'),
+      unit:     root.getAttribute('data-unit'),
+    };
+
+    this.store = createStore(factReducer(defaultState));
+
+    InViewport(root, (elt) =>{
+      setTimeout(()=>{
+        this.store.dispatch({type:"CHANGE_IN_VIEWPORT", payload: true});
+      }, 500);
+    });
+
+    this.render(root);
+  }
+
+  render(root){
+    ReactDOM.render(
+      (
+        <Provider store={this.store}>
+          <Fact />
+        </Provider>
+
+      )
+      , root)
+  }
+}
+
 class Mains{
   constructor(){
     this.setup();
   }
 
   setup(){
-    const roots = document.querySelectorAll('.chart-ring-root');
     this.charts = [];
+
+    const roots = document.querySelectorAll('.chart-ring-root');
     for(let i = 0; i < roots.length; i++){
       this.charts.push(new Main(roots[i]));
     }
@@ -106,6 +141,12 @@ class Mains{
     const items = document.querySelectorAll('.info-graphic-root');
     for(let i = 0; i < items.length; i++){
       this.charts.push(new MainInfoGraphic(items[i]));
+    }
+
+    const facts = document.querySelectorAll('.fact-root');
+    for(let i = 0; i < facts.length; i++){
+      console.log('new Fact');
+      this.charts.push(new MainFact(facts[i]));
     }
   }
 }

@@ -2,7 +2,7 @@
  * Created by colinleung on 20/4/2017.
  */
 
-var FILE = "chartRing";//entry file name
+var FILE = "about-scmp";//entry file name
 
 require.config({
   paths: {

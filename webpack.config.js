@@ -30,7 +30,8 @@ module.exports = {
     "hammerjs"    : "Hammer",
     "prop-types"  : "PropTypes",
     "redux"       : "Redux",
-    "react-redux" : "ReactRedux"
+    "react-redux" : "ReactRedux",
+    "in-viewport" : "InViewport"
   },
 
   devtool: 'inline-source-map',

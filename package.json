@@ -46,6 +46,7 @@
     "accounting": "^0.4.1",
     "eases": "^1.0.8",
     "in-viewport": "^3.5.0",
+    "marked": "^0.3.6",
     "numbro": "^1.11.0",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",

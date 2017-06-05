@@ -7,11 +7,12 @@ class Infographic extends React.Component{
   render(){
     return (
       <div className={"item " + (this.props.inViewport ? "on" : "off")}>
+        <div className="icon"/>
         <h3>
           <AnimaText value={this.props.inViewport ? this.props.value : 0} format={n => accounting.formatNumber(n)}/>
           <sup>{this.props.source}</sup>
         </h3>
-        <div>{this.props.description}</div>
+        <div className="description">{this.props.description}</div>
       </div>
     );
   }

@@ -20,6 +20,7 @@ class Fact extends React.Component{
           <div className="headline">{this.props.headline}</div>
           <div className="subject">{this.props.subject}</div>
         </div>
+        <div className="icon"/>
         <div className="value">{text}</div>
       </div>
     );

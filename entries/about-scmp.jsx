@@ -145,7 +145,6 @@ class Mains{
 
     const facts = document.querySelectorAll('.fact-root');
     for(let i = 0; i < facts.length; i++){
-      console.log('new Fact');
       this.charts.push(new MainFact(facts[i]));
     }
   }

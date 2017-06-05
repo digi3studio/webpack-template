@@ -49,7 +49,7 @@ class ChartRing extends React.Component{
 
       //make labels
       labels.push(
-        <ChartRingLabel key={'label'+i} dx="180" dy="90" name={item.name} value={this.props.inViewport ? item.value : 0} delay={0.25 * i} unit={this.props.dataUnit} position={i} clockwise={isClockwise}/>
+        <ChartRingLabel key={'label'+i} dx="180" dy="90" name={item.name} value={this.props.inViewport ? item.value : 0} delay={0.5 * i + 2} unit={this.props.dataUnit} position={i} clockwise={isClockwise}/>
       );
 
 
@@ -200,7 +200,7 @@ function ChartRingLabel(props){
   ];
 
   return (
-    <g transform={"translate(" + positions[props.position].x + "," + positions[props.position].y + ")"}>
+    <g className="label-group" transform={"translate(" + positions[props.position].x + "," + positions[props.position].y + ")"}>
       <MultilineText className="unit" x="0" y="-10" textAnchor="middle">{props.name}</MultilineText>
       <AnimaText className="value"
                  x="0" y="30"

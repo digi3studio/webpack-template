@@ -27,7 +27,6 @@ module.exports = {
   externals: {
     "react"       : "React",
     "react-dom"   : "ReactDOM",
-    "hammerjs"    : "Hammer",
     "prop-types"  : "PropTypes",
     "redux"       : "Redux",
     "react-redux" : "ReactRedux"

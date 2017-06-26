@@ -16,6 +16,7 @@ class MainInfoGraphic{
       value:       parseFloat(root.getAttribute('data-value')),
       source:      root.getAttribute('data-source'),
       description: root.getAttribute('data-description'),
+      title:       root.getAttribute('data-title'),
     };
 
     this.store = this.store || createStore(inViewportElementReducer(defaultState));

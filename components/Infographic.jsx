@@ -12,6 +12,7 @@ class Infographic extends React.Component{
           <AnimaText value={this.props.inViewport ? this.props.value : 0} format={n => accounting.formatNumber(n)}/>
           <sup>{this.props.source}</sup>
         </h3>
+        <div className="title">{this.props.title}</div>
         <div className="description">{this.props.description}</div>
       </div>
     );
@@ -26,6 +27,7 @@ export default connect(
       value: state.value,
       source: state.source,
       description: state.description,
+      title: state.title || "",
     };
   },
   dispatch => {return {

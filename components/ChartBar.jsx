@@ -23,6 +23,17 @@ class ChartBar extends React.Component{
     if(labelY2 > -5 )labelY2 = -5;
     if(labelY3 > -5 )labelY3 = -5;
 
+<<<<<<< HEAD
+=======
+    let valueY1 = - h1 - 5;
+    let valueY2 = - h2 - 5;
+    let valueY3 = - h3 - 5;
+
+    if(valueY1 > -20) valueY1 = -20;
+    if(valueY2 > -20) valueY2 = -20;
+    if(valueY3 > -20) valueY3 = -20;
+
+>>>>>>> master
     return (
       <div>
         <svg className={this.props.inViewport ? "on": "off"} width={275} height={180} viewBox="0 0 275 180">
@@ -59,6 +70,7 @@ class ChartBar extends React.Component{
             </g>
 
             <g className="values" fill="#002a53">
+<<<<<<< HEAD
               <g className="value" key="value1" transform={"translate(0, " + (-h1 - 5) + ")"}>
                 <text textAnchor="middle" x={91 / 2 + 0}>{this.props.data[0].value + this.props.unit}<tspan className="superscript" dy="-10">{this.props.source}</tspan></text>
               </g>
@@ -66,6 +78,15 @@ class ChartBar extends React.Component{
                 <text textAnchor="middle" x={91 / 2 + 91}>{this.props.data[1].value + this.props.unit}<tspan className="superscript" dy="-10">{this.props.source}</tspan></text>
               </g>
               <g className="value" key="value3" transform={"translate(0, " + (-h3 - 5) + ")"}>
+=======
+              <g className="value" key="value1" transform={"translate(0, " + valueY1+ ")"}>
+                <text textAnchor="middle" x={91 / 2 + 0}>{this.props.data[0].value + this.props.unit}<tspan className="superscript" dy="-10">{this.props.source}</tspan></text>
+              </g>
+              <g className="value" key="value2" transform={"translate(0, " + valueY2 + ")"}>
+                <text textAnchor="middle" x={91 / 2 + 91}>{this.props.data[1].value + this.props.unit}<tspan className="superscript" dy="-10">{this.props.source}</tspan></text>
+              </g>
+              <g className="value" key="value3" transform={"translate(0, " + valueY3 + ")"}>
+>>>>>>> master
                 <text textAnchor="middle" x={91 / 2+ 183}>{this.props.data[2].value + this.props.unit}<tspan className="superscript" dy="-10">{this.props.source}</tspan></text>
               </g>
             </g>

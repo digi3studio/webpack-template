@@ -11,18 +11,19 @@ require.config({
     "react-dom":   "//unpkg.com/react-dom@15.5.4/dist/react-dom",
     "redux":       "//unpkg.com/redux@3.6.0/dist/redux",
     "react-redux": "//unpkg.com/react-redux@5.0.5/dist/react-redux",
-    "hammerjs" :   "//unpkg.com/hammerjs@2.0.8/hammer.min",
+    "jquery"     : "//unpkg.com/jquery@3.2.1/dist/jquery.min",
     "hot-reload":  "http://localhost:3000/static/"+FILE
   }
 });
 
-require(["react", "prop-types", "react-dom", "redux", "react-redux", "hammerjs"], function (React, PropTypes, ReactDOM, Redux, ReactRedux, Hammer) {
+require(["react", "prop-types", "react-dom", "redux", "react-redux", "jquery"], function (React, PropTypes, ReactDOM, Redux, ReactRedux, jQuery) {
   window.React      = React;
   window.PropTypes  = PropTypes;
   window.ReactDOM   = ReactDOM;
   window.Redux      = Redux;
   window.ReactRedux = ReactRedux;
-  window.Hammer     = Hammer;
+  window.jQuery     = jQuery;
+  window.$          = jQuery;
 
   var host = window.location.hostname;
   if(host.indexOf("local") == 0){

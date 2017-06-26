@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import Sample from "../components/Sample";
 import sampleReducer from "../reducers/sampleReducer";
+import {$,jQuery} from "jquery";
 
 import { Provider } from "react-redux";
 import { createStore } from 'redux';

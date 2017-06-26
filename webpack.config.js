@@ -29,7 +29,8 @@ module.exports = {
     "react-dom"   : "ReactDOM",
     "prop-types"  : "PropTypes",
     "redux"       : "Redux",
-    "react-redux" : "ReactRedux"
+    "react-redux" : "ReactRedux",
+    "jquery"      : "jQuery"
   },
 
   devtool: 'inline-source-map',

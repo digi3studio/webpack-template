@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import Sample from "../components/Sample";
+import IGVideoMaker from "../components/IGVideoMaker";
 import sampleReducer from "../reducers/sampleReducer";
 import {$,jQuery} from "jquery";
 
@@ -9,11 +9,10 @@ import { createStore } from 'redux';
 
 export default class Main{
   constructor(){
-    const state = this.getDefaultState();
-    this.store = createStore(sampleReducer(state));
+    this.store = createStore(sampleReducer({}));
 
     if (module.hot){
-      module.hot.accept('../components/Sample', () => {
+      module.hot.accept('../components/IGVideoMaker', () => {
         this.store.dispatch({type:'HOT_RELOAD'});
         this.render();
       });
@@ -22,21 +21,10 @@ export default class Main{
     this.render();
   }
 
-  getDefaultState(){
-    const state = Object.assign({} , {
-      //default state:
-      hello: "world",
-    }, window.__PRELOADED_STATE__ || {});
-
-    delete window.__PRELOADED_STATE__;
-    console.log(state);
-    return state;
-  }
-
   render(){
     ReactDOM.render((
         <Provider store={this.store}>
-          <Sample/>
+          <IGVideoMaker/>
         </Provider>
       ),
       document.getElementById('root')

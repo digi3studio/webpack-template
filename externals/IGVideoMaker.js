@@ -2,7 +2,7 @@
  * Created by colinleung on 20/4/2017.
  */
 
-var FILE = "sample";
+var FILE = "IGVideoMaker";
 
 require.config({
   paths: {

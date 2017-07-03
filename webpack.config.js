@@ -29,7 +29,9 @@ module.exports = {
     "react-dom"   : "ReactDOM",
     "prop-types"  : "PropTypes",
     "redux"       : "Redux",
-    "react-redux" : "ReactRedux"
+    "react-redux" : "ReactRedux",
+    "browserfs"   : "BrowserFS",
+    "pdfkit"      : "PDFDocument",
   },
 
   devtool: 'inline-source-map',

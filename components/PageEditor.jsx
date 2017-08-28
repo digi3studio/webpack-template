@@ -5,6 +5,8 @@ import PageInfo from "./PageInfo";
 import PageTypeSelector from "./PageTypeSelector";
 import PageTranslations from "./PageTranslations";
 import PageFields from "./PageFields";
+import PageControl from "./PageControl";
+import Debug from "./Debug";
 
 class PageEditor extends React.Component{
   render(){
@@ -13,7 +15,7 @@ class PageEditor extends React.Component{
 
     for(let i=0; i<this.props.pagetype.length; i++){
       const item = this.props.pagetype[i];
-      if(item.id == this.props.style.type){
+      if(item.id === this.props.page.pagetype_id){
         schemeProperties = item.properties;
         schemeFields = item.fields;
         break;
@@ -28,25 +30,68 @@ class PageEditor extends React.Component{
         <div className="ui form">
           <div className="ui segment inverted theme">
             <h1>{this.props.campaignName}</h1>
+            <div>{`${this.props.city}_${this.props.editingLanguage}/${this.props.campaignShortName}/${this.props.page.shortname}`}</div>
           </div>
 
           <div id="page-content" className="column">
-            <PageTranslations languages={this.props.languages} master={this.props.masterLanguage} current={this.props.editingLanguage} onChange={this.props.onLanguageChange}/>
-            <PageFields scheme={schemeFields} values={fieldValues} masterValues={masterFieldValues} prefix="field" onChange={this.props.onInputChange}/>
+            <PageTranslations
+              languages={this.props.languages}
+              master={this.props.masterLanguage}
+              current={this.props.editingLanguage}
+              onChange={this.props.onLanguageChange}
+            />
+            <PageFields
+              scheme={schemeFields || this.props.pagetype[0].fields}
+              values={fieldValues}
+              masterValues={masterFieldValues}
+              prefix="field"
+              onChange={this.props.onInputChange}
+            />
+            <PageControl
+              campaignId={this.props.campaignId}
+              sessionId={this.props.sessionId}
+              settings={this.props.page}
+              fields={this.props.fields}
+              properties={this.props.properties}
+              onResultSuccess={this.props.onSaveSuccess}
+              onResultError={this.props.onSaveError}
+              editingLanguage={this.props.editingLanguage}
+              action={"admin/page/save" + ((this.props.page.id === "")? "" : `/${this.props.page.id}`)}
+            />
           </div>
 
           <div id="page-setting" className="column">
             <div className="ui stacked segment inverted">
-              <PageInfo campaignName={this.props.campaignName} page={this.props.page} onChange={this.props.onInputChange}/>
-              <PageTypeSelector pagetypes={this.props.pagetype} selected={this.props.style} onChange={this.props.onPageStyleChange}/>
-              <hr/>
-              <h4><i className="icon setting"/>Page Style Settings</h4>
-              <PageFields scheme={schemeProperties} values={this.props.properties} prefix="prop" onChange={this.props.onInputChange}/>
+              <PageInfo
+                campaignName={this.props.campaignName}
+                page={this.props.page}
+                onChange={this.props.onInputChange}
+              />
             </div>
+
+            <div className="ui segment inverted">
+              <h4><i className="icon setting"/>Page Style Settings</h4>
+              <PageTypeSelector
+                scheme={this.props.pagetype}
+                selectedType={this.props.page.pagetype_id || 1}
+                selectedLayout={this.props.page.layout_id || 0}
+                onChange={this.props.onInputChange}
+              />
+            </div>
+
+            <div className="ui segment">
+              <h4><i className="icon setting"/>Additional Settings</h4>
+              <PageFields
+                scheme={schemeProperties}
+                values={this.props.properties}
+                prefix="prop"
+                onChange={this.props.onInputChange}
+              />
+              <h4>Debug: state</h4>
+              <Debug state={this.props.debug.fields}/>
+            </div>
+
           </div>
-        </div>
-        <div id="page-controls">
-          <button className="ui secondary button">Save</button>
         </div>
       </div>
     );
@@ -59,21 +104,21 @@ export default connect(
       hmr: state.hmr,
 
       campaignName: state.campaign_name,
+      campaignId : state.campaign_id,
+      campaignShortName : state.campaign_shortname,
+      sessionId : state.session_id,
       languages : state.languages,
       masterLanguage : state.masterLanguage,
       editingLanguage: state.editingLanguage,
       pagetype: state.pagetype,
       page : state.page,
-      style: state.style,
       properties: state.properties,
       fields: state.fields,
+      city: state.city,
+      debug: state,
     };
   },
   dispatch => {return {
-    onPageStyleChange : () =>{
-
-    },
-
     onInputChange : (name, value, prefix)=> {
       switch (prefix){
         case 'field':
@@ -108,8 +153,14 @@ export default connect(
     onLanguageChange : (language) =>{
       dispatch({type:"CHANGE_EDITING_LANGUAGE", payload:language});
     },
-    onClick : () => {
-      dispatch({type:"CHANGE_HELLO", payload:"click"});
+
+    onSaveSuccess:(data)=>{
+      dispatch({type:"UPDATE_PAGE_ID", payload: data.page_id});
+      window.history.pushState({}, "", data.url);
     },
+
+    onSaveError:(data)=>{
+      console.log(data);
+    }
   }}
 )(PageEditor);

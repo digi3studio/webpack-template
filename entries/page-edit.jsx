@@ -25,9 +25,13 @@ export default class Main{
     const state = Object.assign({} , {
       //default state:
       campaign_name: "",
+      campaign_shortname: "",
+      campaign_id:"",
+      session_id:"",
       languages : ["en", 'tc'],
       masterLanguage : "en",
       editingLanguage: "en",
+      city: "",
       page : {
         id: null,
         name : "",
@@ -39,13 +43,11 @@ export default class Main{
         hide : false,
         member: false,
         share: true,
-      },
-      style:{
-        type: "1",
-        layout: "1",
+        pagetype_id: "1",
+        layout_id: "0"
       },
       properties: {},
-      fields: {},
+      fields: {en:{}},
       pagetype:[],
 
     }, window.__PRELOADED_STATE__ || {});

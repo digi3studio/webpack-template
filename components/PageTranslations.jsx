@@ -18,13 +18,11 @@ export default class PageTranslations extends React.Component{
     return (
       <div id="translations">
         <div className="column">
-          <div className="ui right pointing label inverted theme">Translation</div>
+          <div className="ui right pointing label inverted theme">Translations</div>
         </div>
         <div className="column">
           <ul className="box">{languages}</ul>
         </div>
-
-
       </div>
     );
   }

@@ -137,11 +137,11 @@ class PageEditor extends React.Component{
               <Debug state={this.props.debug}/>
               <h5>TODO:</h5>
               <ul>
-                <li>File Upload</li>
                 <li>Ordering of group items</li>
                 <li>Versioning</li>
                 <li>Auto save</li>
                 <li>reduce blank fields</li>
+                <li>Image crop</li>
               </ul>
             </div>)}
           </div>

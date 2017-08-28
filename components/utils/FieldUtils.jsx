@@ -57,7 +57,7 @@ export class FieldUtils{
           case 'image':
             return (<FieldImage {...commonAttributes} value={[values[key], values[key+'_1'], values[key+'_2']]} masterValue={[masterValues[key], masterValues[key+'_1'], masterValues[key+'_2']]}/>);
           default:
-            return (<FieldFile  {...commonAttributes} value={values[key]} masterValue={masterValues[key]}/>);
+            return (<FieldFile  {...commonAttributes} value={[values[key], values[key+'_1']]} masterValue={[masterValues[key], masterValues[key+'_1']]}/>);
         }
       case FieldType.BOOLEAN:
         return (<FieldBoolean   {...commonAttributes} value={values[key]} masterValue={masterValues[key]}/>);
@@ -250,15 +250,42 @@ class FieldFile extends IField{
   }
 
   render(){
-    const placeholder = this.getPlaceHolder(this.props.masterValue, "Label");
+    const placeholder0 = this.getPlaceHolder(this.props.masterValue[0], "File");
+    const placeholder1 = this.getPlaceHolder(this.props.masterValue[1], "Label");
+
+    let input = null;
+    if(this.props.value[0] === null || this.props.value[0] === ""){
+      input = (
+        <span className="ui input file">
+          <input type="file" name={`file-${this.state.key}`} ref="file" onChange={this.onFileSelect}/>
+        </span>
+      );
+    }else if(this.state.progress > 0 && this.state.progress < 100){
+      input = (
+        <span>{this.state.progress}</span>
+      )
+    }else{
+      input = (
+        <span>
+          <div className="ui input left icon">
+            <i className="icon file outline"/>
+            <input type="text" onChange={this.onValueChange} name={this.state.key} value={this.props.value[0] || ""} placeholder={placeholder0} />
+          </div>
+
+          <div className="ui input left icon">
+            <i className="icon font"/>
+            <input type="text" className="label-text" onChange={this.onValueChange} name={`${this.state.key}_1`} value={this.props.value[1] || ""} placeholder={placeholder1} />
+          </div>
+        </span>
+      )
+    }
 
     return (
       <li className={`input-${FieldType.FILE}`}>
-        <div className="ui fluid labeled input">
+        <div className="ui labeled input">
           {this.state.label}
-          <input type="text" onChange={this.onValueChange} name={this.state.key} value={this.state.value || ""} placeholder={placeholder}/>
-          <input type="file" />
         </div>
+        {input}
       </li>
     );
   }
@@ -268,16 +295,23 @@ class FieldImage extends FieldFile{
 
 
   render(){
-    const placeholder0 = this.getPlaceHolder(this.props.masterValue[0], "Label");
+    const placeholder0 = this.getPlaceHolder(this.props.masterValue[0], "File");
     const placeholder1 = this.getPlaceHolder(this.props.masterValue[1], "alt");
     const placeholder2 = this.getPlaceHolder(this.props.masterValue[2], "crop");
 
     let input = null;
-    if(this.props.value[0] === null || this.props.value[0] === ""){
+    let value = (this.props.value[0] === "") ? null : this.props.value[0];
+    let previewImage = value || this.props.masterValue[0] || "";
+
+    const thumbnail = (previewImage !== "") ? (<div className="thumbnail" style={{backgroundImage: `url(${this.state.urlBase}media/upload/${previewImage})`}}/>) : null;
+
+    if(this.props.value[0] === undefined || this.props.value[0] === ""){
       input = (
-        <span className="ui input file">
-          <input type="file" name={`file-${this.state.key}`} ref="file" onChange={this.onFileSelect}/>
-        {(this.state.fileData === "") ? null : (<img src={this.state.fileData} />)}
+        <span>
+          <div className="ui input file">
+            <input type="file" name={`file-${this.state.key}`} ref="file" onChange={this.onFileSelect}/>
+          </div>
+          {thumbnail}
         </span>
       );
     }else if(this.state.progress > 0 && this.state.progress < 100){
@@ -289,7 +323,7 @@ class FieldImage extends FieldFile{
         <span>
           <div className="ui input left icon">
             <i className="icon file image outline"/>
-            <input type="text" onChange={this.onValueChange} name={this.state.key} value={this.props.value[0] || ""} placeholder={placeholder0} />
+            <input className="pic-url" type="text" onChange={this.onValueChange} name={this.state.key} value={this.props.value[0] || ""} placeholder={placeholder0} />
           </div>
 
           <div className="ui input left icon">
@@ -301,6 +335,7 @@ class FieldImage extends FieldFile{
             <i className="icon crop"/>
             <input className="crop-setting" type="text" onChange={this.onValueChange} name={`${this.state.key}_2`} value={this.props.value[2] || ""} placeholder={placeholder2} />
           </div>
+          {thumbnail}
         </span>
       )
     }

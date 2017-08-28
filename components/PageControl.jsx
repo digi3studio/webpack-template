@@ -43,10 +43,10 @@ export default class PageControl extends Form{
         method: 'post',
         body: this.createPostData()
       })
-      .then((response) => response.json())
+      .then((response) => response.text())
       .then((data)=> {
         this.setState({isLoading: false});
-        console.log(data);
+        this.props.onPreviewRender(data);
       });
   }
 

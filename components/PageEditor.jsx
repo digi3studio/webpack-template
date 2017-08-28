@@ -6,9 +6,24 @@ import PageTypeSelector from "./PageTypeSelector";
 import PageTranslations from "./PageTranslations";
 import PageFields from "./PageFields";
 import PageControl from "./PageControl";
+import PagePreview from "./PagePreview";
+
 import Debug from "./Debug";
 
 class PageEditor extends React.Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      previewSource : "",
+    };
+
+    this.onPreviewRender = this.onPreviewRender.bind(this);
+  }
+
+  onPreviewRender(data){
+    this.setState({previewSource: data})
+  }
+
   render(){
     let schemeProperties;
     let schemeFields;
@@ -24,6 +39,17 @@ class PageEditor extends React.Component{
 
     const fieldValues       = Object.assign({}, this.props.fields[this.props.editingLanguage]);
     const masterFieldValues = Object.assign({}, this.props.fields[this.props.masterLanguage]);
+
+    if(this.state.previewSource !== ""){
+      return (
+        <div>
+          <div className="ui segment">
+            <div className="ui button" onClick={e => this.setState({previewSource: ""})}>Close Preview</div>
+          </div>
+          <PagePreview source={this.state.previewSource}/>
+        </div>
+      )
+    }
 
     return (
       <div>
@@ -55,8 +81,10 @@ class PageEditor extends React.Component{
               properties={this.props.properties}
               onResultSuccess={this.props.onSaveSuccess}
               onResultError={this.props.onSaveError}
+              onPreviewRender = {this.onPreviewRender}
               editingLanguage={this.props.editingLanguage}
-              action={"admin/page/save" + ((this.props.page.id === "")? "" : `/${this.props.page.id}`)}
+              action={"admin/page/save" + ((this.props.page.id === "")? "" : `/${this.props.page.id}`)
+              }
             />
           </div>
 
@@ -79,23 +107,36 @@ class PageEditor extends React.Component{
               />
             </div>
 
+            {(isEmpty(schemeProperties))? null : (
+              <div className="ui segment">
+                <h4><i className="icon setting"/>Additional Settings</h4>
+                <PageFields
+                  scheme={schemeProperties}
+                  values={this.props.properties}
+                  prefix="prop"
+                  onChange={this.props.onInputChange}
+                />
+              </div>
+            )}
+
             <div className="ui segment">
-              <h4><i className="icon setting"/>Additional Settings</h4>
-              <PageFields
-                scheme={schemeProperties}
-                values={this.props.properties}
-                prefix="prop"
-                onChange={this.props.onInputChange}
-              />
               <h4>Debug: state</h4>
               <Debug state={this.props.debug.fields}/>
             </div>
-
           </div>
         </div>
       </div>
     );
   }
+}
+
+
+function isEmpty(obj){
+  if(obj === undefined)return true;
+  if(obj.constructor === Array)return (obj.length === 0);
+  if(obj.constructor === Object)return (obj.keys(obj).length === 0);
+
+  return false;
 }
 
 export default connect(

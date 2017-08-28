@@ -6,6 +6,11 @@ export default class PageControl extends Form{
     super(props);
     this.onSave = this.onSave.bind(this);
     this.preview = this.preview.bind(this);
+
+    this.state = {
+      ...this.state,
+      isSaved : false,
+    }
   }
 
   createPostData(){
@@ -36,7 +41,11 @@ export default class PageControl extends Form{
   preview(){
     let url = "page/admin_preview" + ((this.props.settings.id === "")? "" : `/${this.props.settings.id}`);
 
-    this.setState({isLoading : true});
+    this.setState({
+      isLoading : true,
+      isSaved : false,
+    });
+
     fetch(
         this.state.urlBase + url, {
         credentials: "same-origin",
@@ -45,7 +54,9 @@ export default class PageControl extends Form{
       })
       .then((response) => response.text())
       .then((data)=> {
-        this.setState({isLoading: false});
+        this.setState({
+          isLoading: false,
+        });
         this.props.onPreviewRender(data);
       });
   }
@@ -57,7 +68,16 @@ export default class PageControl extends Form{
       <div id="page-controls">
         <button className={buttonStyle+ " grey"} onClick={this.preview}>Preview</button>
         <button className={buttonStyle+ " black"} onClick={this.onSave}>Save</button>
+        {this.state.isSaved ? (<i className="ui icon checkmark"/>): null}
       </div>
     );
+  }
+
+  onResultSuccess(data){
+    super.onResultSuccess(data);
+    this.setState({isSaved : true});
+
+    clearTimeout(this.iid);
+    this.iid = setTimeout(()=>{this.setState({isSaved : false})}, 3000);
   }
 }

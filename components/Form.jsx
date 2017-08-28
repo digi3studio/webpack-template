@@ -33,6 +33,14 @@ export default class Form extends React.Component{
       });
   }
 
+  onResultSuccess(data){
+    this.props.onResultSuccess(data);
+  }
+
+  onResultError(data){
+    this.props.onResultError(data)
+  }
+
   onResult(data){
     this.setState({
       error: null,
@@ -40,9 +48,9 @@ export default class Form extends React.Component{
     });
 
     if(data.status === 'success'){
-      if(this.props.onResultSuccess !== null)this.props.onResultSuccess(data);
+      this.onResultSuccess(data);
     }else{
-      if(this.props.onResultError !== null)this.props.onResultError(data);
+      this.onResultError(data);
 
       this.setState({
         error: data.code + data.info.message

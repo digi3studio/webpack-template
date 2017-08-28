@@ -131,7 +131,7 @@ class PageEditor extends React.Component{
               </div>
             )}
 
-            {(true) ? null : (
+            {(false) ? null : (
             <div className="ui segment">
               <h4>Debug: state</h4>
               <Debug state={this.props.debug}/>

@@ -80,6 +80,7 @@ class IField extends React.Component{
     this.state = {
       key : key,
       label : (<div className="ui label">{this.props.label.replace("_", " ")}</div>),
+      loading: false,
     }
   }
 
@@ -173,6 +174,81 @@ class FieldLink extends IField{
 }
 
 class FieldFile extends IField{
+  constructor(props){
+    super(props);
+    this.state = {
+      ...this.state,
+      fileData: "",
+      progress: 0,
+      uploadedPath: "",
+      urlBase : document.body.getAttribute('data-base'),
+    };
+
+    this.onFileSelect       = this.onFileSelect.bind(this);
+    this.onUpload           = this.onUpload.bind(this);
+    this.onTransferComplete = this.onTransferComplete.bind(this);
+    this.onUploadProgress   = this.onUploadProgress.bind(this);
+  }
+
+  shouldComponentUpdate(nextProps, nextState){
+    if(nextState !== this.state)return true;
+    return super.shouldComponentUpdate(nextProps, nextState);
+  }
+
+  onFileSelect(){
+    const input = this.refs.file;
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        this.setState({fileData : e.target.result})
+        this.onUpload();
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  onUploadProgress(e){
+    if (e.lengthComputable) {
+      const value = Math.floor((e.loaded / e.total) * 100);
+      this.setState({ progress : value});
+    }
+  }
+
+  onTransferComplete(e){
+    const response = e.target.response;
+    if(response.status === "success"){
+      this.setState({
+        loading: false,
+        progress : 100,
+        uploadedPath: response.url,
+      });
+      this.props.onChange(this.state.key, response.url);
+    }else{
+      this.setState({
+        loading: false,
+        progress : 0,
+        uploadedPath : "",
+        fileData : ""
+      });
+      console.log('upload Error');
+    }
+  }
+
+  onUpload(){
+    const formData = new FormData();
+    formData.append("file", this.refs.file.files[0]);
+
+    const xhr = new XMLHttpRequest();
+    xhr.responseType = "json";
+    xhr.addEventListener('load', this.onTransferComplete);
+    xhr.upload.addEventListener('progress', this.onUploadProgress);
+
+    xhr.open("POST", `${this.state.urlBase}admin/page/upload.json`);
+    xhr.send(formData);
+
+    this.setState({loading : true});
+  }
+
   render(){
     const placeholder = this.getPlaceHolder(this.props.masterValue, "Label");
 
@@ -188,42 +264,53 @@ class FieldFile extends IField{
   }
 }
 
-class FieldImage extends IField{
+class FieldImage extends FieldFile{
+
+
   render(){
     const placeholder0 = this.getPlaceHolder(this.props.masterValue[0], "Label");
     const placeholder1 = this.getPlaceHolder(this.props.masterValue[1], "alt");
     const placeholder2 = this.getPlaceHolder(this.props.masterValue[2], "crop");
 
-    const fileLink = (this.props.value[0] == null || this.props.value[0] == "") ?
-      (
+    let input = null;
+    if(this.props.value[0] === null || this.props.value[0] === ""){
+      input = (
         <span className="ui input file">
-          <input type="file"/>
+          <input type="file" name={`file-${this.state.key}`} ref="file" onChange={this.onFileSelect}/>
+        {(this.state.fileData === "") ? null : (<img src={this.state.fileData} />)}
         </span>
-      ):
-      (
+      );
+    }else if(this.state.progress > 0 && this.state.progress < 100){
+      input = (
+        <span>{this.state.progress}</span>
+      )
+    }else{
+      input = (
         <span>
           <div className="ui input left icon">
             <i className="icon file image outline"/>
             <input type="text" onChange={this.onValueChange} name={this.state.key} value={this.props.value[0] || ""} placeholder={placeholder0} />
           </div>
 
-          <div className="ui input">
-            <input type="text" onChange={this.onValueChange} name={`${this.state.key}_1`} value={this.props.value[1] || ""} placeholder={placeholder1} />
+          <div className="ui input left icon">
+            <i className="icon universal access"/>
+            <input className="alt-text" type="text" onChange={this.onValueChange} name={`${this.state.key}_1`} value={this.props.value[1] || ""} placeholder={placeholder1} />
           </div>
 
-          <div className="ui input">
-            <input type="text" onChange={this.onValueChange} name={`${this.state.key}_2`} value={this.props.value[2] || ""} placeholder={placeholder2} />
+          <div className="ui input left icon">
+            <i className="icon crop"/>
+            <input className="crop-setting" type="text" onChange={this.onValueChange} name={`${this.state.key}_2`} value={this.props.value[2] || ""} placeholder={placeholder2} />
           </div>
         </span>
-      );
+      )
+    }
 
     return (
       <li className={`input-${FieldType.FILE}`}>
         <div className="ui labeled input">
           {this.state.label}
         </div>
-
-        {fileLink}
+        {input}
       </li>
     );
   }

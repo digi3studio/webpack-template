@@ -235,13 +235,11 @@ class FieldEnum extends IField{
     this.refreshDropdown = this.refreshDropdown.bind(this);
   }
 
-  refreshDropdown(){
-    let self = this;
-
-    $(`#ui-dropdown-${this.state.key}`).dropdown(
+  refreshDropdown(item, key){
+    $(item).dropdown(
       {
-        onChange:function(value, text, $selectedItem){
-          self.props.onChange($(this).attr('name'), value);
+        onChange: value => {
+          this.props.onChange(key, value);
         }
       }
     );
@@ -271,7 +269,7 @@ class FieldEnum extends IField{
 
     return (
       <li className={`input-${FieldType.ENUM}`}>
-        <div id={`ui-dropdown-${this.state.key}`} className="ui selection dropdown" name={this.state.key}>
+        <div className="ui selection dropdown fluid" name={this.state.key} ref={item => this.refreshDropdown(item, this.state.key)}>
           <input type="hidden" name={this.state.key} value={this.props.value}/>
           <i className="dropdown icon"/>
           <div className="default text">{this.props.label}</div>

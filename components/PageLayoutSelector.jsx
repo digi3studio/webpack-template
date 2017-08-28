@@ -1,7 +1,7 @@
 import React from "react";
 import {FieldType, FieldUtils} from "./utils/FieldUtils";
 
-export default class PageTypeSelector extends React.Component{
+export default class PageLayoutSelector extends React.Component{
   constructor(props){
     super(props);
 
@@ -25,14 +25,24 @@ export default class PageTypeSelector extends React.Component{
       "layout_id"   : this.props.selectedLayout || 0,
     };
 
-    const fields = this.scheme.map(field => FieldUtils.renderField("",field, values, values, this.onChange));
     let layoutCounts = {};
     this.props.scheme.forEach(type => layoutCounts[`type${type.id}`] = parseInt(type.layout_count));
+    let layoutCount = layoutCounts[`type${this.props.selectedType}`];
+
+    if(layoutCount <= 1){
+      return null;
+    }
 
     return (
-      <ul className="box">
-        {fields}
-      </ul>
+      <div className="ui segment inverted">
+        <h4><i className="icon setting"/>Page Style Settings</h4>
+        <div>
+          <div className="ui input labeled">
+            <div className="ui label">Layout</div>
+            <input type="number" min="0" max={layoutCount-1} value={this.props.selectedLayout} onChange={e => this.onChange("layout_id", e.target.value)}/>
+          </div>
+        </div>
+      </div>
     );
   }
 }

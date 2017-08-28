@@ -3,6 +3,7 @@ import {connect} from "react-redux";
 
 import PageInfo from "./PageInfo";
 import PageTypeSelector from "./PageTypeSelector";
+import PageLayoutSelector from "./PageLayoutSelector";
 import PageTranslations from "./PageTranslations";
 import PageFields from "./PageFields";
 import PageControl from "./PageControl";
@@ -56,7 +57,11 @@ class PageEditor extends React.Component{
         <div className="ui form">
           <div className="ui segment inverted theme">
             <h1>{this.props.campaignName}</h1>
-            <div>{`${this.props.city}_${this.props.editingLanguage}/${this.props.campaignShortName}/${this.props.page.shortname}`}</div>
+            {
+              (this.props.page.shortname === "")?
+                (<div>&nbsp;</div>):
+                (<div>{`${this.props.city}_${this.props.editingLanguage}/${this.props.campaignShortName}/${this.props.page.shortname}`}</div>)
+            }
           </div>
 
           <div id="page-content" className="column">
@@ -90,22 +95,29 @@ class PageEditor extends React.Component{
 
           <div id="page-setting" className="column">
             <div className="ui stacked segment inverted">
-              <PageInfo
-                campaignName={this.props.campaignName}
-                page={this.props.page}
-                onChange={this.props.onInputChange}
-              />
+              <h3><i className="icon setting"/>Settings</h3>
+              <div id="page-info">
+                <PageTypeSelector
+                  scheme={this.props.pagetype}
+                  selectedType={this.props.page.pagetype_id || 1}
+                  selectedLayout={this.props.page.layout_id || 0}
+                  onChange={this.props.onInputChange}
+                />
+                <PageInfo
+                  campaignName={this.props.campaignName}
+                  page={this.props.page}
+                  onChange={this.props.onInputChange}
+                />
+              </div>
+
             </div>
 
-            <div className="ui segment inverted">
-              <h4><i className="icon setting"/>Page Style Settings</h4>
-              <PageTypeSelector
-                scheme={this.props.pagetype}
-                selectedType={this.props.page.pagetype_id || 1}
-                selectedLayout={this.props.page.layout_id || 0}
-                onChange={this.props.onInputChange}
-              />
-            </div>
+            <PageLayoutSelector
+              scheme={this.props.pagetype}
+              selectedType={this.props.page.pagetype_id || 1}
+              selectedLayout={this.props.page.layout_id || 0}
+              onChange={this.props.onInputChange}
+            />
 
             {(isEmpty(schemeProperties))? null : (
               <div className="ui segment">
@@ -119,10 +131,19 @@ class PageEditor extends React.Component{
               </div>
             )}
 
+            {(true) ? null : (
             <div className="ui segment">
               <h4>Debug: state</h4>
               <Debug state={this.props.debug}/>
-            </div>
+              <h5>TODO:</h5>
+              <ul>
+                <li>File Upload</li>
+                <li>Ordering of group items</li>
+                <li>Versioning</li>
+                <li>Auto save</li>
+                <li>reduce blank fields</li>
+              </ul>
+            </div>)}
           </div>
         </div>
       </div>

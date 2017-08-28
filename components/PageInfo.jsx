@@ -37,13 +37,9 @@ export default class PageInfo extends React.Component{
     const fields = this.scheme.map(field => FieldUtils.renderField("", field, values, values, this.onChange));
 
     return (
-      <div id="page-info">
-        <h3><i className="icon setting"/>Settings</h3>
-        <ul className="box">
-          {fields}
-        </ul>
-        <hr />
-      </div>
+      <ul className="box">
+        {fields}
+      </ul>
     )
   }
 }

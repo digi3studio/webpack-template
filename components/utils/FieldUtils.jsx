@@ -303,7 +303,7 @@ class FieldImage extends FieldFile{
     let value = (this.props.value[0] === "") ? null : this.props.value[0];
     let previewImage = value || this.props.masterValue[0] || "";
 
-    const thumbnail = (previewImage !== "") ? (<div className="thumbnail" style={{backgroundImage: `url(${this.state.urlBase}media/upload/${previewImage})`}}/>) : null;
+    const thumbnail = (previewImage !== "") ? (<div className="thumbnail" style={{backgroundImage: `url(${this.state.urlBase}imagefly/w100/media/upload/${previewImage})`}}/>) : null;
 
     if(this.props.value[0] === undefined || this.props.value[0] === ""){
       input = (

@@ -1,5 +1,6 @@
 import React from "react";
 import Form from "./Form";
+import {fromJS} from "immutable";
 
 export default class PageControl extends Form{
   constructor(props){
@@ -13,14 +14,44 @@ export default class PageControl extends Form{
     }
   }
 
+  isEmpty(obj){
+    if(obj === undefined)return true;
+    if(obj.constructor === String)return (obj === "" || obj === "http://");
+    if(obj.constructor === Array)return (obj.length === 0);
+    if(obj.constructor === Object)return (Object.keys(obj).length === 0);
+
+    return false;
+  }
+
   createPostData(){
+    //clean up blank variables
+    let properties = fromJS(this.props.properties).toJSON();
+    let fields     = fromJS(this.props.fields).toJSON();
+
+    for(let name in properties){
+      if(this.isEmpty(properties[name]))delete properties[name];
+    }
+
+    for(let lang in fields){
+      for(let name in fields[lang]){
+        let value = fields[lang][name];
+        if(this.isEmpty(value)){
+          delete fields[lang][name];
+        }
+      }
+      if(this.isEmpty(fields[lang])){
+        delete fields[lang];
+      }
+    }
+
     let postData = new FormData();
     let storage = {
       page_values     : this.props.settings,
-      field_values    : this.props.fields,
-      page_ext_values : this.props.properties,
+      field_values    : fields,
+      page_ext_values : properties,
     };
-    const settings = this.props.settings;
+
+
     postData.append("source", JSON.stringify(storage));
     postData.append("campaign", this.props.campaignId);
 

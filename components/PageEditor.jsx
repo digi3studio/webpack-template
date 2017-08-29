@@ -8,17 +8,31 @@ import PageTranslations from "./PageTranslations";
 import PageFields from "./PageFields";
 import PageControl from "./PageControl";
 import PagePreview from "./PagePreview";
+import PageAutoSave from "./PageAutoSave";
 
 import Debug from "./Debug";
 
 class PageEditor extends React.Component{
   constructor(props){
     super(props);
+    const isContiueEdition = /#edition\d+/i.test(window.location.href);
+    const edition = isContiueEdition ? window.location.href.match(/#edition\d+/i)[0].replace('#','') : `edition${Date.now()}`;
+
     this.state = {
       previewSource : "",
+      autoSaveId : edition,
     };
 
     this.onPreviewRender = this.onPreviewRender.bind(this);
+
+    if(!isContiueEdition){
+      window.history.pushState({}, "", `#${this.state.autoSaveId}`);
+    }else{
+      const newState = JSON.parse(localStorage.getItem(this.state.autoSaveId));
+      if(newState){
+        this.props.onLoadState(newState);
+      }
+    }
   }
 
   onPreviewRender(data){
@@ -26,6 +40,11 @@ class PageEditor extends React.Component{
   }
 
   render(){
+    //auto save
+    const autosave = JSON.stringify(this.props.state);
+    localStorage.setItem(this.state.autoSaveId, autosave);
+
+
     let schemeProperties;
     let schemeFields;
 
@@ -133,16 +152,20 @@ class PageEditor extends React.Component{
 
             {(false) ? null : (
             <div className="ui segment">
+              <PageAutoSave campaignId={this.props.campaignId} pageId={this.props.page.id} currentEdition={this.state.autoSaveId}/>
+
               <h4>Debug: state</h4>
               <Debug state={this.props.debug}/>
               <h5>TODO:</h5>
               <ul>
                 <li>Ordering of group items</li>
                 <li>Versioning</li>
-                <li>Auto save</li>
-                <li>reduce blank fields</li>
                 <li>Image crop</li>
+                <li>check other user editing same page</li>
               </ul>
+              <div className="ui button" onClick={this.props.onCleanField}>
+                Clean Fields
+              </div>
             </div>)}
           </div>
         </div>
@@ -151,11 +174,11 @@ class PageEditor extends React.Component{
   }
 }
 
-
 function isEmpty(obj){
   if(obj === undefined)return true;
+  if(obj.constructor === String)return (obj === "");
   if(obj.constructor === Array)return (obj.length === 0);
-  if(obj.constructor === Object)return (obj.keys(obj).length === 0);
+  if(obj.constructor === Object)return (Object.keys(obj).length === 0);
 
   return false;
 }
@@ -177,6 +200,7 @@ export default connect(
       properties: state.properties,
       fields: state.fields,
       city: state.city,
+      state: state,
       debug: state,
     };
   },
@@ -223,6 +247,15 @@ export default connect(
 
     onSaveError:(data)=>{
       console.log(data);
-    }
+    },
+
+    onCleanField:() => {
+      dispatch({type:"CLEAN_FIELDS", payload: ""})
+    },
+
+    onLoadState:(newState) => {
+      dispatch({type:"LOAD_STATE", payload: newState});
+    },
+
   }}
 )(PageEditor);

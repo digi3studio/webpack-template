@@ -42,6 +42,32 @@ export default function pageEditReducer(defaultState = null){
       case 'UPDATE_PAGE_ID':
         if(state.page['id'] === action.payload)return state;
         return {...state, page : {...state.page, id : action.payload}};
+
+      case 'CLEAN_FIELDS':
+        let properties = {...state.properties};
+        let fields = {...state.fields};
+
+        for(let name in properties){
+          if(isEmpty(properties[name]))delete properties[name];
+        }
+
+        for(let lang in fields){
+          for(let name in fields[lang]){
+            let value = fields[lang][name];
+            if(isEmpty(value)){
+              delete fields[lang][name];
+            }
+          }
+          if(isEmpty(fields[lang])){
+            delete fields[lang];
+          }
+        }
+
+        return {...state, properties: properties, fields: fields};
+
+      case 'LOAD_STATE':
+        return action.payload;
+
       default:
         return state;
     }
@@ -51,9 +77,19 @@ export default function pageEditReducer(defaultState = null){
 function copyMultiLanguageField(state, language, key, value){
   let translate = Object.assign({}, state.fields[language]);
   translate[key] = value;
+  if(value === "") delete translate[key];
 
   let obj = Object.assign({}, state.fields);
   obj[language] = translate;
 
   return {fields: obj};
+}
+
+function isEmpty(obj){
+  if(obj === undefined)return true;
+  if(obj.constructor === String)return (obj === "");
+  if(obj.constructor === Array)return (obj.length === 0);
+  if(obj.constructor === Object)return (Object.keys(obj).length === 0);
+
+  return false;
 }

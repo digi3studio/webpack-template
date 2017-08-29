@@ -15,8 +15,10 @@ import Debug from "./Debug";
 class PageEditor extends React.Component{
   constructor(props){
     super(props);
-    const isContiueEdition = /#edition\d+/i.test(window.location.href);
-    const edition = isContiueEdition ? window.location.href.match(/#edition\d+/i)[0].replace('#','') : `edition${Date.now()}`;
+    const editionFormat = /#edition\d*:\d+/i;
+
+    const isContiueEdition = editionFormat.test(window.location.href);
+    const edition = isContiueEdition ? window.location.href.match(editionFormat)[0].replace('#','') : `edition${this.props.page.id}:${Date.now()}`;
 
     this.state = {
       previewSource : "",
@@ -24,6 +26,7 @@ class PageEditor extends React.Component{
     };
 
     this.onPreviewRender = this.onPreviewRender.bind(this);
+    this.onSaveSuccess   = this.onSaveSuccess.bind(this);
 
     if(!isContiueEdition){
       window.history.pushState({}, "", `#${this.state.autoSaveId}`);
@@ -39,11 +42,28 @@ class PageEditor extends React.Component{
     this.setState({previewSource: data})
   }
 
-  render(){
-    //auto save
+  onSaveSuccess(data){
+    const oldPageId = this.props.page.id;
+
+    this.props.onSaveSuccess(data);
+
+    if(oldPageId !== this.props.page.id){
+      const newAutoSaveId = this.state.autoSaveId.replace("edition:", `edition${this.props.page.id}:`);
+      localStorage.removeItem(this.state.autoSaveId);
+
+      this.setState({autoSaveId: newAutoSaveId});
+      this.autoSave();
+      window.history.pushState({}, "", `${data.url}#${this.state.autoSaveId}`);
+    }
+  }
+
+  autoSave(){
     const autosave = JSON.stringify(this.props.state);
     localStorage.setItem(this.state.autoSaveId, autosave);
+  }
 
+  render(){
+    this.autoSave();
 
     let schemeProperties;
     let schemeFields;
@@ -103,7 +123,7 @@ class PageEditor extends React.Component{
               settings={this.props.page}
               fields={this.props.fields}
               properties={this.props.properties}
-              onResultSuccess={this.props.onSaveSuccess}
+              onResultSuccess={this.onSaveSuccess}
               onResultError={this.props.onSaveError}
               onPreviewRender = {this.onPreviewRender}
               editingLanguage={this.props.editingLanguage}
@@ -150,9 +170,12 @@ class PageEditor extends React.Component{
               </div>
             )}
 
-            {(false) ? null : (
             <div className="ui segment">
-              <PageAutoSave campaignId={this.props.campaignId} pageId={this.props.page.id} currentEdition={this.state.autoSaveId}/>
+              <PageAutoSave
+                campaignId={this.props.campaignId}
+                pageId={this.props.page.id}
+                currentEdition={this.state.autoSaveId}
+              />
 
               <h4>Debug: state</h4>
               <Debug state={this.props.debug}/>
@@ -166,7 +189,7 @@ class PageEditor extends React.Component{
               <div className="ui button" onClick={this.props.onCleanField}>
                 Clean Fields
               </div>
-            </div>)}
+            </div>
           </div>
         </div>
       </div>
@@ -242,7 +265,6 @@ export default connect(
 
     onSaveSuccess:(data)=>{
       dispatch({type:"UPDATE_PAGE_ID", payload: data.page_id});
-      window.history.pushState({}, "", data.url);
     },
 
     onSaveError:(data)=>{

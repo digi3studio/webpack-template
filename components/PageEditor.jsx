@@ -59,7 +59,12 @@ class PageEditor extends React.Component{
 
   autoSave(){
     const autosave = JSON.stringify(this.props.state);
-    localStorage.setItem(this.state.autoSaveId, autosave);
+    try{
+      localStorage.setItem(this.state.autoSaveId, autosave);
+    }catch(ex){
+      alert(ex);
+    }
+
   }
 
   render(){
@@ -178,11 +183,10 @@ class PageEditor extends React.Component{
               />
 
               <h4>Debug: state</h4>
-              <Debug state={this.props.debug}/>
+
               <h5>TODO:</h5>
               <ul>
                 <li>Ordering of group items</li>
-                <li>Versioning</li>
                 <li>Image crop</li>
                 <li>check other user editing same page</li>
               </ul>

@@ -85,6 +85,7 @@ class IField extends React.Component{
   }
 
   shouldComponentUpdate(nextProps, nextState){
+    if(nextState !== this.state)return true;
     if(nextProps.value && nextProps.value === this.props.value)return false;
 
     return true;
@@ -112,9 +113,36 @@ class FieldComment extends React.Component{
 }
 
 class FieldText extends IField{
+  constructor(props){
+    super(props);
+    this.state = Object.assign(this.state||{},{
+      enableLongText : false,
+    });
+
+    this.onReadOnlyClick = this.onReadOnlyClick.bind(this);
+  }
+
+  onReadOnlyClick(){
+    this.setState({enableLongText : true});
+  }
+
   render(){
     const length = parseInt(this.props.option);
     const placeholder = this.getPlaceHolder(this.props.masterValue, "");
+    const longTextLimit = 5000;
+
+    if(!this.state.enableLongText && this.props.value && this.props.value.length > longTextLimit){
+      const str = this.props.value.substring(0, longTextLimit);
+
+      return (
+        <li className={`input-${FieldType.TEXT}`}>
+          <div className="ui fluid labeled input">
+            {this.state.label}
+            <textarea onClick={this.onReadOnlyClick} readOnly="readOnly" defaultValue={str+'\n\n[ -- '+(this.props.value.length - longTextLimit)+' characters trimmed -- ]\n[ -- Click to load full text -- ]'}/>
+          </div>
+        </li>
+      );
+    }
 
     const input = ( (length > 64) || (length <= 0)) ?
       (<textarea onChange={this.onValueChange} name={this.state.key} value={this.props.value || ""} placeholder={placeholder}/>):

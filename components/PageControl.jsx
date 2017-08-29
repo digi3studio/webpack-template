@@ -15,7 +15,7 @@ export default class PageControl extends Form{
   }
 
   isEmpty(obj){
-    if(obj === undefined)return true;
+    if(!obj)return true;
     if(obj.constructor === String)return (obj === "" || obj === "http://");
     if(obj.constructor === Array)return (obj.length === 0);
     if(obj.constructor === Object)return (Object.keys(obj).length === 0);
@@ -27,6 +27,7 @@ export default class PageControl extends Form{
     //clean up blank variables
     let properties = fromJS(this.props.properties).toJSON();
     let fields     = fromJS(this.props.fields).toJSON();
+    let page_values= fromJS(this.props.settings).toJSON();
 
     for(let name in properties){
       if(this.isEmpty(properties[name]))delete properties[name];
@@ -44,13 +45,16 @@ export default class PageControl extends Form{
       }
     }
 
+    for(let name in page_values){
+      if(this.isEmpty(page_values[name]))delete page_values[name];
+    }
+
     let postData = new FormData();
     let storage = {
-      page_values     : this.props.settings,
+      page_values     : page_values,
       field_values    : fields,
       page_ext_values : properties,
     };
-
 
     postData.append("source", JSON.stringify(storage));
     postData.append("campaign", this.props.campaignId);

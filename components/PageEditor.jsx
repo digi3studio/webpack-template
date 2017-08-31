@@ -23,13 +23,14 @@ class PageEditor extends React.Component{
     this.state = {
       previewSource : "",
       autoSaveId : edition,
+      hugeFile: false,
     };
 
     this.onPreviewRender = this.onPreviewRender.bind(this);
     this.onSaveSuccess   = this.onSaveSuccess.bind(this);
 
     if(!isContiueEdition){
-      window.history.pushState({}, "", `#${this.state.autoSaveId}`);
+      window.history.replaceState({}, "", `#${this.state.autoSaveId}`);
     }else{
       const newState = JSON.parse(localStorage.getItem(this.state.autoSaveId));
       if(newState){
@@ -52,24 +53,11 @@ class PageEditor extends React.Component{
       localStorage.removeItem(this.state.autoSaveId);
 
       this.setState({autoSaveId: newAutoSaveId});
-      this.autoSave();
-      window.history.pushState({}, "", `${data.url}#${this.state.autoSaveId}`);
+      window.history.replaceState({}, "", `${data.url}#${this.state.autoSaveId}`);
     }
-  }
-
-  autoSave(){
-    const autosave = JSON.stringify(this.props.state);
-    try{
-      localStorage.setItem(this.state.autoSaveId, autosave);
-    }catch(ex){
-      alert(ex);
-    }
-
   }
 
   render(){
-    this.autoSave();
-
     let schemeProperties;
     let schemeFields;
 
@@ -180,9 +168,8 @@ class PageEditor extends React.Component{
                 campaignId={this.props.campaignId}
                 pageId={this.props.page.id}
                 currentEdition={this.state.autoSaveId}
+                state={this.props.state}
               />
-
-              <h4>Debug: state</h4>
 
               <h5>TODO:</h5>
               <ul>
@@ -190,9 +177,6 @@ class PageEditor extends React.Component{
                 <li>Image crop</li>
                 <li>check other user editing same page</li>
               </ul>
-              <div className="ui button" onClick={this.props.onCleanField}>
-                Clean Fields
-              </div>
             </div>
           </div>
         </div>

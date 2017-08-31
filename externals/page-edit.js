@@ -4,8 +4,9 @@
 
 var FILE = "page-edit";
 var host = window.location.hostname;
+var isLocal = /^localhost|^local.|.local$/i.test(host);
 
-if(host.indexOf("local") == 0){
+if(isLocal){
   //development
   require.config({
     paths: {
@@ -42,7 +43,7 @@ require(["react", "prop-types", "react-dom", "redux", "react-redux","immutable"]
   window.Immutable  = Immutable;
 
 
-  if(host.indexOf("local") == 0){
+  if(isLocal){
     require(["hot-reload"]);
   }else{
     require(["../dist/"+FILE]);

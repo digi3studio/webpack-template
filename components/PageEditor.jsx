@@ -84,6 +84,7 @@ class PageEditor extends React.Component{
       )
     }
 
+    const previewURL = `${this.props.city}_${this.props.editingLanguage}/${this.props.campaignShortName}/${this.props.page.shortname}`;
     return (
       <div>
         <div className="ui form">
@@ -92,7 +93,7 @@ class PageEditor extends React.Component{
             {
               (this.props.page.shortname === "")?
                 (<div>&nbsp;</div>):
-                (<div>{`${this.props.city}_${this.props.editingLanguage}/${this.props.campaignShortName}/${this.props.page.shortname}`}</div>)
+                (<div><a className="preview-link" href={previewURL} target="_blank">{previewURL}</a></div>)
             }
           </div>
 

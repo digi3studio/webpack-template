@@ -420,7 +420,7 @@ class FieldEnum extends IField{
     return (
       <li className={`input-${FieldType.ENUM}`}>
         <div className="ui selection dropdown fluid" name={this.state.key} ref={item => this.refreshDropdown(item, this.state.key)}>
-          <input type="hidden" name={this.state.key} value={this.props.value}/>
+          <input type="hidden" name={this.state.key} value={this.props.value || ""}/>
           <i className="dropdown icon"/>
           <div className="default text">{this.props.label}</div>
           <div className="menu">

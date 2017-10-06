@@ -20,16 +20,13 @@ export default class PageLayoutSelector extends React.Component{
   }
 
   render(){
-    const values = {
-      "pagetype_id" : this.props.selectedType,
-      "layout_id"   : this.props.selectedLayout || 0,
-    };
-
     let layoutCounts = {};
-    this.props.scheme.forEach(type => layoutCounts[`type${type.id}`] = parseInt(type.layout_count));
+    this.props.scheme.forEach(
+      type => layoutCounts[`type${type.id}`] = parseInt(type.layout_count)
+    );
     let layoutCount = layoutCounts[`type${this.props.selectedType}`];
 
-    if(layoutCount <= 1){
+    if(this.props.selectedLayout === null || layoutCount <= 1){
       return null;
     }
 

@@ -10,9 +10,8 @@ if(isLocal){
   //development
   require.config({
     paths: {
-      "react":       "//unpkg.com/react@15.5.4/dist/react",
-      "prop-types":  "//unpkg.com/prop-types@15.5.10/prop-types",
-      "react-dom":   "//unpkg.com/react-dom@15.5.4/dist/react-dom",
+      "react":       "//unpkg.com/react@16.0.0/umd/react.development",
+      "react-dom":   "//unpkg.com/react-dom@16.0.0/umd/react-dom.development",
       "redux":       "//unpkg.com/redux@3.6.0/dist/redux",
       "react-redux": "//unpkg.com/react-redux@5.0.5/dist/react-redux",
       "immutable":   "//unpkg.com/immutable@3.8.1/dist/immutable",
@@ -23,25 +22,21 @@ if(isLocal){
   //production
   require.config({
     paths: {
-      "react":       "//unpkg.com/react@15.5.4/dist/react.min",
-      "prop-types":  "//unpkg.com/prop-types@15.5.10/prop-types.min",
-      "react-dom":   "//unpkg.com/react-dom@15.5.4/dist/react-dom.min",
+      "react":       "//unpkg.com/react@16.0.0/umd/react.production.min",
+      "react-dom":   "//unpkg.com/react-dom@16.0.0/umd/react-dom.production.min",
       "redux":       "//unpkg.com/redux@3.6.0/dist/redux.min",
       "react-redux": "//unpkg.com/react-redux@5.0.5/dist/react-redux.min",
-      "immutable":   "//unpkg.com/immutable@3.8.1/dist/immutable.min",
-      "hot-reload":  "http://localhost:3000/static/"+FILE
+      "immutable":   "//unpkg.com/immutable@3.8.1/dist/immutable.min"
     }
   });
 }
 
-require(["react", "prop-types", "react-dom", "redux", "react-redux","immutable"], function (React, PropTypes, ReactDOM, Redux, ReactRedux, Immutable) {
+require(["react", "react-dom", "redux", "react-redux","immutable"], function (React, ReactDOM, Redux, ReactRedux, Immutable) {
   window.React      = React;
-  window.PropTypes  = PropTypes;
   window.ReactDOM   = ReactDOM;
   window.Redux      = Redux;
   window.ReactRedux = ReactRedux;
   window.Immutable  = Immutable;
-
 
   if(isLocal){
     require(["hot-reload"]);

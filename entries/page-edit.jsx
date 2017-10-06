@@ -4,12 +4,17 @@ import PageEditor from "../components/PageEditor";
 import reducer from "../reducers/PageEditReducer";
 
 import { Provider } from "react-redux";
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import thunkMiddleware from 'redux-thunk'
+
 
 export default class Main{
   constructor(){
     const state = this.getDefaultState();
-    this.store = createStore(reducer(state));
+    this.store = createStore(
+      reducer(state),
+      applyMiddleware(thunkMiddleware)
+    );
 
     if (module.hot){
       module.hot.accept('../components/PageEditor', () => {
@@ -21,13 +26,13 @@ export default class Main{
     this.render();
   }
 
-  getDefaultState(){
-    const state = Object.assign({} , {
+  getDefaultState()
+  {
+    return Object.assign({} , {
       //default state:
       campaign_name: "",
       campaign_shortname: "",
       campaign_id:"",
-      session_id:"",
       languages : ["en", 'tc'],
       masterLanguage : "en",
       editingLanguage: "en",
@@ -49,13 +54,20 @@ export default class Main{
       properties: {},
       fields: {en:{}},
       pagetype:[],
-
+      previewSource : "",
+      editTime: this.getEditTime(),
     }, window.__PRELOADED_STATE__ || {});
-
-    return state;
   }
 
-  render(){
+  getEditTime()
+  {
+    return /#edition\d*:\d+/i.test(window.location.href) ?
+      location.href.replace(/[^#]+#edition\d*:(\d+)/i, '$1') :
+      Date.now();
+  }
+
+  render()
+  {
     ReactDOM.render((
         <Provider store={this.store}>
           <PageEditor/>

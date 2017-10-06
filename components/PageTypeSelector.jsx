@@ -25,9 +25,14 @@ export default class PageTypeSelector extends React.Component{
       "layout_id"   : this.props.selectedLayout || 0,
     };
 
-    const fields = this.scheme.map(field => FieldUtils.renderField("",field, values, values, this.onChange));
+    const fields = this.scheme.map(
+      field => FieldUtils.renderField("",field, values, values, this.onChange)
+    );
+
     let layoutCounts = {};
-    this.props.scheme.forEach(type => layoutCounts[`type${type.id}`] = parseInt(type.layout_count));
+    this.props.scheme.forEach(
+      type => layoutCounts[`type${type.id}`] = parseInt(type.layout_count)
+    );
 
     return (
       <ul className="box">

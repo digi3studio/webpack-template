@@ -1,3 +1,17 @@
+import {
+  FLASH_MESSAGE,
+  FLASH_MESSAGE_END,
+
+  CLEAN_FIELDS,
+
+  LOAD_PREVIEW,
+  UPDATE_PREVIEW,
+
+  SAVE_SUCCESS,
+  UPDATE_PAGE_ID,
+
+} from "./actions";
+
 export default function pageEditReducer(defaultState = null){
   return function(state = defaultState, action){
     switch(action.type){
@@ -36,37 +50,45 @@ export default function pageEditReducer(defaultState = null){
 
         let setting = Object.assign({}, state);
         setting.page[action.payload.name] = action.payload.value;
+        if(action.payload.name === 'pagetype_id'){
+          //reset layout id if pagetype changed.
+          setting.page['layout_id'] = setting.page['layout_id'] || "0";
+        }
 
         return setting;
 
-      case 'UPDATE_PAGE_ID':
-        if(state.page['id'] === action.payload)return state;
-        return {...state, page : {...state.page, id : action.payload}};
-
-      case 'CLEAN_FIELDS':
-        let properties = {...state.properties};
-        let fields = {...state.fields};
-
-        for(let name in properties){
-          if(isEmpty(properties[name]))delete properties[name];
-        }
-
-        for(let lang in fields){
-          for(let name in fields[lang]){
-            let value = fields[lang][name];
-            if(isEmpty(value)){
-              delete fields[lang][name];
-            }
-          }
-          if(isEmpty(fields[lang])){
-            delete fields[lang];
-          }
-        }
-
-        return {...state, properties: properties, fields: fields};
+      case CLEAN_FIELDS:
+        return action.payload;
 
       case 'LOAD_STATE':
         return action.payload;
+
+      //async actions
+      case LOAD_PREVIEW:
+        return state;
+
+      case UPDATE_PREVIEW:
+        return {...state, previewSource : action.payload};
+
+      case UPDATE_PAGE_ID:
+        if(state.page.id === action.payload)return state;
+        return {...state, page:{...state.page, id: action.payload}};
+
+      case FLASH_MESSAGE:
+        switch (action.payload.type){
+          case SAVE_SUCCESS:
+            return {...state, justSaved: true};
+          default:
+            return state;
+        }
+
+      case FLASH_MESSAGE_END:
+        switch (action.payload.type){
+          case SAVE_SUCCESS:
+            return {...state, justSaved: false};
+          default:
+            return state;
+        }
 
       default:
         return state;
@@ -83,13 +105,4 @@ function copyMultiLanguageField(state, language, key, value){
   obj[language] = translate;
 
   return {fields: obj};
-}
-
-function isEmpty(obj){
-  if(obj === undefined)return true;
-  if(obj.constructor === String)return (obj === "");
-  if(obj.constructor === Array)return (obj.length === 0);
-  if(obj.constructor === Object)return (Object.keys(obj).length === 0);
-
-  return false;
 }

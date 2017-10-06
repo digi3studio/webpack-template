@@ -9,52 +9,49 @@ import PageFields from "./PageFields";
 import PageControl from "./PageControl";
 import PagePreview from "./PagePreview";
 import PageAutoSave from "./PageAutoSave";
+import LocationBar from "./LocationBar";
 
-import Debug from "./Debug";
+import {isEmpty, previewPage, savePage, clearPreview} from "../reducers/actions";
+
+//import Debug from "./Debug";
 
 class PageEditor extends React.Component{
   constructor(props){
     super(props);
-    const editionFormat = /#edition\d*:\d+/i;
-
-    const isContiueEdition = editionFormat.test(window.location.href);
-    const edition = isContiueEdition ? window.location.href.match(editionFormat)[0].replace('#','') : `edition${this.props.page.id}:${Date.now()}`;
 
     this.state = {
-      previewSource : "",
-      autoSaveId : edition,
       hugeFile: false,
+      urlBase : document.body.getAttribute('data-base'),
     };
 
-    this.onPreviewRender = this.onPreviewRender.bind(this);
-    this.onSaveSuccess   = this.onSaveSuccess.bind(this);
-
-    if(!isContiueEdition){
-      window.history.replaceState({}, "", `#${this.state.autoSaveId}`);
-    }else{
-      const newState = JSON.parse(localStorage.getItem(this.state.autoSaveId));
-      if(newState){
-        this.props.onLoadState(newState);
-      }
-    }
+    this.onPreview       = this.onPreview.bind(this);
+    this.onSave          = this.onSave.bind(this);
   }
 
-  onPreviewRender(data){
-    this.setState({previewSource: data})
+  onPreview(){
+    let url = this.state.urlBase + "page/admin_preview" + ((this.props.page.id === "")? "" : `/${this.props.page.id}`);
+
+    this.props.onPreview(
+      url,
+      this.props.page,
+      this.props.properties,
+      this.props.fields,
+      this.props.campaignId,
+      this.props.editingLanguage
+    );
   }
 
-  onSaveSuccess(data){
-    const oldPageId = this.props.page.id;
+  onSave(){
+    let url = this.state.urlBase + "admin/page/save" + ((this.props.page.id === "")? "" : `/${this.props.page.id}`) + '.json';
 
-    this.props.onSaveSuccess(data);
-
-    if(oldPageId !== this.props.page.id){
-      const newAutoSaveId = this.state.autoSaveId.replace("edition:", `edition${this.props.page.id}:`);
-      localStorage.removeItem(this.state.autoSaveId);
-
-      this.setState({autoSaveId: newAutoSaveId});
-      window.history.replaceState({}, "", `${data.url}#${this.state.autoSaveId}`);
-    }
+    this.props.onSave(
+      url,
+      this.props.page,
+      this.props.properties,
+      this.props.fields,
+      this.props.campaignId,
+      this.props.editingLanguage
+    );
   }
 
   render(){
@@ -73,13 +70,13 @@ class PageEditor extends React.Component{
     const fieldValues       = Object.assign({}, this.props.fields[this.props.editingLanguage]);
     const masterFieldValues = Object.assign({}, this.props.fields[this.props.masterLanguage]);
 
-    if(this.state.previewSource !== ""){
+    if(this.props.previewSource !== ""){
       return (
         <div>
           <div className="ui segment">
-            <div className="ui button" onClick={e => this.setState({previewSource: ""})}>Close Preview</div>
+            <div className="ui button" onClick={this.props.clearPreview}>Close Preview</div>
           </div>
-          <PagePreview source={this.state.previewSource}/>
+          <PagePreview source={this.props.previewSource}/>
         </div>
       )
     }
@@ -87,6 +84,11 @@ class PageEditor extends React.Component{
     const previewURL = `${this.props.city}_${this.props.editingLanguage}/${this.props.campaignShortName}/${this.props.page.shortname}`;
     return (
       <div>
+        <LocationBar
+          path={`${this.state.urlBase}admin/page/edit/${this.props.page.id}`}
+          query={{campaign: this.props.campaignId}}
+          fragment={`edition${this.props.page.id}:${this.props.editTime}`}
+        />
         <div className="ui form">
           <div className="ui segment inverted theme">
             <h1>{this.props.campaignName}</h1>
@@ -105,24 +107,16 @@ class PageEditor extends React.Component{
               onChange={this.props.onLanguageChange}
             />
             <PageFields
-              scheme={schemeFields || this.props.pagetype[0].fields}
+              scheme={schemeFields}
               values={fieldValues}
               masterValues={masterFieldValues}
               prefix="field"
               onChange={this.props.onInputChange}
             />
             <PageControl
-              campaignId={this.props.campaignId}
-              sessionId={this.props.sessionId}
-              settings={this.props.page}
-              fields={this.props.fields}
-              properties={this.props.properties}
-              onResultSuccess={this.onSaveSuccess}
-              onResultError={this.props.onSaveError}
-              onPreviewRender = {this.onPreviewRender}
-              editingLanguage={this.props.editingLanguage}
-              action={"admin/page/save" + ((this.props.page.id === "")? "" : `/${this.props.page.id}`)
-              }
+              onPreview={this.onPreview}
+              onSave={this.onSave}
+              justSaved = {this.props.justSaved}
             />
           </div>
 
@@ -132,8 +126,8 @@ class PageEditor extends React.Component{
               <div id="page-info">
                 <PageTypeSelector
                   scheme={this.props.pagetype}
-                  selectedType={this.props.page.pagetype_id || 1}
-                  selectedLayout={this.props.page.layout_id || 0}
+                  selectedType={this.props.page.pagetype_id}
+                  selectedLayout={this.props.page.layout_id}
                   onChange={this.props.onInputChange}
                 />
                 <PageInfo
@@ -147,8 +141,8 @@ class PageEditor extends React.Component{
 
             <PageLayoutSelector
               scheme={this.props.pagetype}
-              selectedType={this.props.page.pagetype_id || 1}
-              selectedLayout={this.props.page.layout_id || 0}
+              selectedType={this.props.page.pagetype_id}
+              selectedLayout={this.props.page.layout_id}
               onChange={this.props.onInputChange}
             />
 
@@ -168,8 +162,9 @@ class PageEditor extends React.Component{
               <PageAutoSave
                 campaignId={this.props.campaignId}
                 pageId={this.props.page.id}
-                currentEdition={this.state.autoSaveId}
+                currentEdition={`edition${this.props.page.id}:${this.props.editTime}`}
                 state={this.props.state}
+                onLoadState={this.props.onLoadState}
               />
 
               <h5>TODO:</h5>
@@ -186,38 +181,21 @@ class PageEditor extends React.Component{
   }
 }
 
-function isEmpty(obj){
-  if(obj === undefined)return true;
-  if(obj.constructor === String)return (obj === "");
-  if(obj.constructor === Array)return (obj.length === 0);
-  if(obj.constructor === Object)return (Object.keys(obj).length === 0);
-
-  return false;
-}
-
 export default connect(
   state => {
-    return{
-      hmr: state.hmr,
+    return {
+      ...state,
 
       campaignName: state.campaign_name,
       campaignId : state.campaign_id,
       campaignShortName : state.campaign_shortname,
       sessionId : state.session_id,
-      languages : state.languages,
-      masterLanguage : state.masterLanguage,
-      editingLanguage: state.editingLanguage,
-      pagetype: state.pagetype,
-      page : state.page,
-      properties: state.properties,
-      fields: state.fields,
-      city: state.city,
+
       state: state,
-      debug: state,
     };
   },
   dispatch => {return {
-    onInputChange : (name, value, prefix)=> {
+    onInputChange : (name, value, prefix) => {
       switch (prefix){
         case 'field':
           dispatch({
@@ -248,25 +226,30 @@ export default connect(
       }
     },
 
-    onLanguageChange : (language) =>{
-      dispatch({type:"CHANGE_EDITING_LANGUAGE", payload:language});
-    },
+    onLanguageChange : language => dispatch({type:"CHANGE_EDITING_LANGUAGE", payload:language}),
 
-    onSaveSuccess:(data)=>{
-      dispatch({type:"UPDATE_PAGE_ID", payload: data.page_id});
-    },
+    onPreview: (url, settings, properties, fields, campaignId, editingLanguage) => dispatch(previewPage(
+      url,
+      settings,
+      properties,
+      fields,
+      campaignId,
+      editingLanguage
+    )),
 
-    onSaveError:(data)=>{
-      console.log(data);
-    },
+    onSave:(url, settings, properties, fields, campaignId, editingLanguage) => dispatch(savePage(
+      url,
+      settings,
+      properties,
+      fields,
+      campaignId,
+      editingLanguage
+    )),
 
-    onCleanField:() => {
-      dispatch({type:"CLEAN_FIELDS", payload: ""})
-    },
+    onCleanField:() => dispatch({type:"CLEAN_FIELDS", payload: ""}),
 
-    onLoadState:(newState) => {
-      dispatch({type:"LOAD_STATE", payload: newState});
-    },
+    onLoadState:(newState) => dispatch({type:"LOAD_STATE", payload: newState}),
 
+    clearPreview: () => dispatch(clearPreview()),
   }}
 )(PageEditor);

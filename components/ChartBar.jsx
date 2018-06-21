@@ -4,7 +4,7 @@ import {connect} from "react-redux";
 class ChartBar extends React.Component{
   render(){
     const width = 460;
-    const barHeight = 125;
+    const barHeight = 147;
     const barWidth = Math.round(width / this.props.data.length);
     const values = this.props.data.map( x => parseFloat(x.value));
     const mx = Math.max(...values);
